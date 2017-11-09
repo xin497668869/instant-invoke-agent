@@ -3,7 +3,7 @@ package com.xin.base
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Opcodes.ASM6
+import org.objectweb.asm.Opcodes.ASM4
 import kotlin.jvm.internal.FunctionReference
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
@@ -14,7 +14,7 @@ import kotlin.reflect.jvm.jvmName
  */
 
 
-open class GeneralClassAdapter : ClassVisitor(ASM6) {
+open class GeneralClassAdapter : ClassVisitor(ASM4) {
     fun setCp(cv: ClassVisitor) {
         this.cv = cv
     }

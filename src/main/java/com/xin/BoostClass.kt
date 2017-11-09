@@ -55,26 +55,27 @@ fun initClass(classLoader: ClassLoader) {
     try {
         MySqlConfigChangeClass(instrumentation, classLoader).redefineClass()
 
-        MySqlChangeClass(instrumentation, classLoader).redefineClass()
-
-        ComponentScanAnnotationParserChangeClass(instrumentation, classLoader).redefineClass()
-
     } catch (e: Exception) {
-        System.err.println("mysql 的PreparedStatement替换失败 ")
+        System.err.println("MySqlConfigChangeClass替换失败 ")
         e.printStackTrace()
     }
 
-//    try {
-//        componentScanAnnotationParserChangeClass(classLoader)
-//
-//    } catch (e: Exception) {
-//        System.err.println("componentScanAnnotationParser替换失败")
-//    }
-//
-//    try {
-//        mySqlConfigChangeClass(classLoader)
-//    } catch (e: Exception) {
-//        System.err.println("ConnectionImpl替换失败")
-//    }
+    try {
+        MySqlChangeClass(instrumentation, classLoader).redefineClass()
+
+
+    } catch (e: Exception) {
+        System.err.println("MySqlChangeClass替换失败 ")
+        e.printStackTrace()
+    }
+
+    try {
+        ComponentScanAnnotationParserChangeClass(instrumentation, classLoader).redefineClass()
+
+    } catch (e: Exception) {
+        System.err.println("ComponentScanAnnotationParserChangeClass替换失败 ")
+        e.printStackTrace()
+    }
+
 }
 

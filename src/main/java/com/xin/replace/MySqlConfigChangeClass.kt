@@ -42,7 +42,7 @@ class MySqlConfigChangeClass(instrumentation: Instrumentation, classLoader: Clas
             }
 
             // 定义一个自己的方法访问类
-            internal inner class ChangeMethodAdapter(mv: MethodVisitor) : MethodVisitor(Opcodes.ASM6, mv) {
+            internal inner class ChangeMethodAdapter(mv: MethodVisitor) : MethodVisitor(Opcodes.ASM4, mv) {
 
                 override fun visitCode() {
                     super.visitCode()

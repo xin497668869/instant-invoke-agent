@@ -41,7 +41,7 @@ public class TestController : ApplicationContextAware {
                         bw.flush()
                     } else {
                         val bw = BufferedWriter(OutputStreamWriter(socket.getOutputStream()))
-                        bw.write("\r\n")
+                        bw.write("  \r\n")
                         bw.flush()
                     }
                 }
@@ -51,7 +51,9 @@ public class TestController : ApplicationContextAware {
             }
         }.start()
     }
-
+    fun testtt(): Boolean {
+        return false
+    }
     private fun handle(methodVo: MethodVo): ResponseData? {
         try {
             val aClass = Class.forName(methodVo.className)
@@ -67,9 +69,18 @@ public class TestController : ApplicationContextAware {
             }.toTypedArray())
 
             val startTime = System.currentTimeMillis()
-            val result = declaredMethod.invoke(bean)
+            var result: Any? = null
+            try {
+                result = declaredMethod.invoke(bean)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             val interval = System.currentTimeMillis() - startTime
-            println("===== return: \n" + JSON.toJSONString(result, true))
+            if (result == null) {
+                println("===== return: \nnull")
+            } else {
+                println("===== return: \n" + JSON.toJSONString(result, true))
+            }
 
             println("===== end [" + dateFormat.format(Date()) + "] [" + uuid + "] 时间为:" + getFormatTime(interval) + "ms  方法:${methodVo.methodName} 类: ${methodVo.className} =====")
 
@@ -80,6 +91,8 @@ public class TestController : ApplicationContextAware {
             System.err.println("没找到方法, 请compile之后在运行")
         } catch (e: ClassNotFoundException) {
             System.err.println("没找到对应的类, 请compile之后在运行")
+        } catch (e: Throwable) {
+            System.err.println("执行异常")
         }
         return null
     }

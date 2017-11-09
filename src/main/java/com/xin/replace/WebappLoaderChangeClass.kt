@@ -16,12 +16,14 @@ import kotlin.jvm.internal.FunctionReference
 
 class WebappLoaderChangeClass(instrumentation: Instrumentation, classLoader: ClassLoader) : BaseChangeClass(instrumentation, classLoader) {
 
-       companion object Handle {
+    companion object Handle {
         fun handleClassLoader(urlClassLoader: URLClassLoader) {
-//    val aClass = commonClassLoader.loadClass("org.apache.catalina.loader.WebappClassLoaderBase")
-//    val getContextName = aClass.getDeclaredMethod("getContextName")
-//    val contextName = getContextName.invoke(urlClassLoader)
-            initClass(urlClassLoader)
+            try {
+                urlClassLoader.loadClass("org.springframework.context.annotation.ComponentScanAnnotationParser")
+                initClass(urlClassLoader)
+            } catch (e: Exception) {
+                println("非spring项目, 不注入 $urlClassLoader")
+            }
         }
     }
 
@@ -32,7 +34,7 @@ class WebappLoaderChangeClass(instrumentation: Instrumentation, classLoader: Cla
     override fun getGeneralClassAdapter(): GeneralClassAdapter {
         return object : GeneralClassAdapter() {
 
-            inner class ChangeMethodAdapter(mv: MethodVisitor) : MethodVisitor(Opcodes.ASM6, mv) {
+            inner class ChangeMethodAdapter(mv: MethodVisitor) : MethodVisitor(Opcodes.ASM4, mv) {
                 override fun visitMethodInsn(opcode: Int, owner: String, name: String, desc: String, itf: Boolean) {
                     super.visitMethodInsn(opcode, owner, name, desc, itf)
                     if (opcode == Opcodes.INVOKEINTERFACE && name == "start") {

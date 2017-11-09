@@ -38,7 +38,7 @@ class ComponentScanAnnotationParserChangeClass(instrumentation: Instrumentation,
             }
 
             // 定义一个自己的方法访问类
-            inner class ChangeMethodAdapter(mv: MethodVisitor) : MethodVisitor(ASM6, mv) {
+            inner class ChangeMethodAdapter(mv: MethodVisitor) : MethodVisitor(ASM4, mv) {
                 var time = 0
                 override fun visitMethodInsn(opcode: Int, owner: String, name: String, desc: String, itf: Boolean) {
                     super.visitMethodInsn(opcode, owner, name, desc, itf)

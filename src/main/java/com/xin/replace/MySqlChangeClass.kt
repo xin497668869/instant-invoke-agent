@@ -45,7 +45,7 @@ class MySqlChangeClass(instrumentation: Instrumentation, classLoader: ClassLoade
             }
 
             // 定义一个自己的方法访问类
-            internal inner class ChangeMethodAdapter(mv: org.objectweb.asm.MethodVisitor) : org.objectweb.asm.MethodVisitor(org.objectweb.asm.Opcodes.ASM6, mv) {
+            internal inner class ChangeMethodAdapter(mv: org.objectweb.asm.MethodVisitor) : org.objectweb.asm.MethodVisitor(org.objectweb.asm.Opcodes.ASM4, mv) {
                 var arraylength = false
                 var aaload = false
 
