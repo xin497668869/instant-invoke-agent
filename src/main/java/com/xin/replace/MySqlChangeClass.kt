@@ -1,5 +1,6 @@
 package com.xin.replace
 
+import com.sql.SQLUtils
 import com.xin.base.GeneralClassAdapter
 import java.lang.instrument.Instrumentation
 import kotlin.jvm.internal.FunctionReference
@@ -8,6 +9,9 @@ import kotlin.jvm.internal.FunctionReference
 /**
  * 修改mysql代码, 用于显示具体sql
  */
+fun main(args: Array<String>) {
+    println(SQLUtils.formatMySql("select school_uid,count(*) from sr_device where device_id = 123 group by school_uid"))
+}
 class MySqlChangeClass(instrumentation: Instrumentation, classLoader: ClassLoader) : BaseChangeClass(instrumentation, classLoader) {
 
   companion object Handle {
@@ -18,7 +22,8 @@ class MySqlChangeClass(instrumentation: Instrumentation, classLoader: ClassLoade
             val bufferContent = getByteBuffer.invoke(buffer) as ByteArray
             val bufferPosition = getPosition.invoke(buffer) as Int
             val sql = String(bufferContent, 5, bufferPosition - 5)
-            println("sql: $sql")
+            println("sql: ${SQLUtils.formatMySql(sql)}")
+
         }
     }
 
