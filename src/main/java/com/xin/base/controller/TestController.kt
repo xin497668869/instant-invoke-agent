@@ -1,4 +1,4 @@
-package com.xin.base
+package com.xin.base.controller
 
 import com.alibaba.fastjson.JSON
 import com.xin.StoreInfo
@@ -19,9 +19,19 @@ import javax.annotation.PostConstruct
  */
 @Component
 public class TestController : ApplicationContextAware {
+
+
     private lateinit var applicationContext: ApplicationContext
+
+
+    override fun setApplicationContext(applicationContext: ApplicationContext?) {
+        this.applicationContext = applicationContext!!
+    }
+
+
     private var dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     private var order = 0
+
     @PostConstruct
     fun startServer() {
         Thread {
@@ -51,9 +61,7 @@ public class TestController : ApplicationContextAware {
             }
         }.start()
     }
-    fun testtt(): Boolean {
-        return false
-    }
+
     private fun handle(methodVo: MethodVo): ResponseData? {
         try {
             val aClass = Class.forName(methodVo.className)
@@ -106,7 +114,4 @@ public class TestController : ApplicationContextAware {
         }
     }
 
-    override fun setApplicationContext(applicationContext: ApplicationContext) {
-        this.applicationContext = applicationContext
-    }
 }

@@ -51,7 +51,7 @@ class ComponentScanAnnotationParserChangeClass(instrumentation: Instrumentation,
                     super.visitVarInsn(opcode, `var`)
                     if (time > 1 && opcode == ALOAD && `var` == 3) {
                         super.visitVarInsn(ALOAD, 8)
-                        super.visitLdcInsn("com.xin.base")
+                        super.visitLdcInsn("com.xin.base.controller")
                         super.visitMethodInsn(INVOKEINTERFACE, "java/util/Set", "add", "(Ljava/lang/Object;)Z", true)
                         super.visitInsn(POP)
                     }

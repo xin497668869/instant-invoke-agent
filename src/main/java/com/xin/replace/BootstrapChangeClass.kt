@@ -17,10 +17,11 @@ import kotlin.jvm.internal.FunctionReference
 class BootstrapChangeClass(instrumentation: Instrumentation, classLoader: ClassLoader) : BaseChangeClass(instrumentation, classLoader) {
 
     companion object Handle {
-        fun handleClassLoader(name: String, classLoader: ClassLoader, parent: ClassLoader) {
+        fun handleClassLoader(name: String?, classLoader: ClassLoader?, parent: ClassLoader?) {
             if (name == "common") {
-                commonClassLoader = classLoader
-                WebappLoaderChangeClass(StoreInfo.instrumentation, classLoader)
+                commonClassLoader = classLoader!!
+                Thread.currentThread().contextClassLoader = classLoader
+                WebappLoaderChangeClass(StoreInfo.instrumentation, classLoader).redefineClass()
             }
         }
     }
@@ -44,11 +45,10 @@ class BootstrapChangeClass(instrumentation: Instrumentation, classLoader: ClassL
             internal inner class ChangeMethodAdapter(mv: MethodVisitor) : MethodVisitor(ASM4, mv) {
 
                 override fun visitInsn(opcode: Int) {
-
-
                     if (opcode == ARETURN) {
                         mv.visitVarInsn(ASTORE, 6)
                         invokeHandle(mv, BootstrapChangeClass.Handle::handleClassLoader as FunctionReference) { mv ->
+
                             mv.visitVarInsn(ALOAD, 1)
                             mv.visitVarInsn(ALOAD, 6)
                             mv.visitVarInsn(ALOAD, 2)

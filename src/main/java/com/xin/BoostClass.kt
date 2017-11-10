@@ -6,6 +6,9 @@ import com.xin.replace.BootstrapChangeClass
 import com.xin.replace.ComponentScanAnnotationParserChangeClass
 import com.xin.replace.MySqlChangeClass
 import com.xin.replace.MySqlConfigChangeClass
+import com.xin.util.getClassByte
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassWriter
 import java.lang.instrument.Instrumentation
 
 
@@ -70,6 +73,18 @@ fun initClass(classLoader: ClassLoader) {
     }
 
     try {
+        println("准备尝试")
+//        val classReader = ClassReader(getClassByte(ClassLoader.getSystemClassLoader(), "com.xin.base.controller.TestController"))
+//        val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS or ClassWriter.COMPUTE_MAXS)
+//        classWriter.visit(52,0,"com/xin/base/controller/TestController",null,"java/lang/Object", arrayOf("org/springframework/context/ApplicationContextAware"))
+//        val toByteArray = classWriter.toByteArray()
+//
+//
+//        val method = ClassLoader::class.java.getDeclaredMethod("defineClass", String::class.java, ByteArray::class.java, Int::class.java, Int::class.java)
+//
+//        method.isAccessible=true
+//        val invoke = method.invoke(classLoader, "com.xin.base.controller.TestController", toByteArray, 0, toByteArray.size)
+//        println("哈哈, 强制执行")
         ComponentScanAnnotationParserChangeClass(instrumentation, classLoader).redefineClass()
 
     } catch (e: Exception) {
@@ -77,5 +92,13 @@ fun initClass(classLoader: ClassLoader) {
         e.printStackTrace()
     }
 
+
+}
+
+fun main(args: Array<String>) {
+    val classReader = ClassReader(getClassByte(ClassLoader.getSystemClassLoader(), "com.xin.base.controller.TestController"))
+    val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS or ClassWriter.COMPUTE_MAXS)
+
+    println()
 }
 

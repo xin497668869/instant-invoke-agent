@@ -17,12 +17,12 @@ import kotlin.jvm.internal.FunctionReference
 class WebappLoaderChangeClass(instrumentation: Instrumentation, classLoader: ClassLoader) : BaseChangeClass(instrumentation, classLoader) {
 
     companion object Handle {
-        fun handleClassLoader(urlClassLoader: URLClassLoader) {
+        fun handleClassLoader(urlClassLoader: URLClassLoader,webAppLoader: Any) {
             try {
                 urlClassLoader.loadClass("org.springframework.context.annotation.ComponentScanAnnotationParser")
                 initClass(urlClassLoader)
             } catch (e: Exception) {
-                println("非spring项目, 不注入 $urlClassLoader")
+                println("非spring项目, 不注入 $webAppLoader")
             }
         }
     }
@@ -43,6 +43,8 @@ class WebappLoaderChangeClass(instrumentation: Instrumentation, classLoader: Cla
 
                             mv.visitVarInsn(Opcodes.ALOAD, 0)
                             mv.visitFieldInsn(Opcodes.GETFIELD, "org/apache/catalina/loader/WebappLoader", "classLoader", "Lorg/apache/catalina/loader/WebappClassLoaderBase;")
+                            mv.visitVarInsn(Opcodes.ALOAD, 0)
+
                         }
                     }
                 }
