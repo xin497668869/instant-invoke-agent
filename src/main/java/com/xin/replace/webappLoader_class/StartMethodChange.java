@@ -35,7 +35,7 @@ public class StartMethodChange extends BaseMethodChange {
                               "classLoader",
                               "Lorg/apache/catalina/loader/WebappClassLoaderBase;");
 
-            InvokeUtil.invokeStaticMethod(mv, WebappLoaderClassChange.class, "handle");
+            InvokeUtil.invokeStaticMethod(mv, this, "handle");
         }
     }
 

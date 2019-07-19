@@ -25,7 +25,7 @@ public abstract class BaseClassChange {
                            .redefineClasses(classDefinition);
             System.out.println("可进行热部署测试:" + getClassName() + "替换成功");
         } catch (Exception e) {
-            System.out.println("热部署类注入失败, 无法进行热部署: ${getClassName()} err: ${e.message}");
+            System.out.println("热部署类注入失败, 无法进行热部署:" + getClassName() + " err: " + e.getMessage());
         }
     }
 

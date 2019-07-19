@@ -6,7 +6,7 @@ import com.sql.SQLUtils;
 import com.xin.replace.base.BaseMethodChange;
 import com.xin.replace.base.SettingInstance;
 import com.xin.util.InvokeUtil;
-import dnl.utils.text.table.TextTreeTable;
+import com.xin.util.table.TextTable;
 import org.objectweb.asm.MethodVisitor;
 
 import java.sql.ResultSet;
@@ -23,7 +23,7 @@ import static org.objectweb.asm.Opcodes.ALOAD;
 public class FillSendPacketMethodChange extends BaseMethodChange {
     private int i = 0;
 
-    public FillSendPacketMethodChange(MethodVisitor mv) {
+    FillSendPacketMethodChange(MethodVisitor mv) {
         super(mv);
     }
 
@@ -46,27 +46,14 @@ public class FillSendPacketMethodChange extends BaseMethodChange {
                 }
             }
             resultSet.close();
-            TextTreeTable textTreeTable = new TextTreeTable(columnNames,
-                                                            new String[][]{columnDatas});
+            TextTable textTreeTable = new TextTable(columnNames,
+                                                    new String[][]{columnDatas});
             textTreeTable.printTable(System.out, 0);
-            System.out.println();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-//        try {
-//            Class bufferClass = Thread.currentThread()
-//                                      .getContextClassLoader()
-//                                      .loadClass("com.mysql.jdbc.Buffer");
-//            Method getByteBuffer = bufferClass.getMethod("getByteBuffer");
-//            Method getPosition = bufferClass.getMethod("getPosition");
-//            byte[] bufferContent = (byte[]) getByteBuffer.invoke(buffer);
-//            int bufferPosition = (int) getPosition.invoke(buffer);
-//            String sql = new String(bufferContent, 5, bufferPosition - 5);
-//            System.out.println("sql:[ " + SQLUtils.format(sql, "mysql") + " ]");
-//        }catch (Exception e) {
-//            e.printStackTrace();
-//        }
+
     }
 
     @Override
@@ -77,7 +64,7 @@ public class FillSendPacketMethodChange extends BaseMethodChange {
             if (i == 6) {
                 mv.visitVarInsn(ALOAD, 6);
                 mv.visitVarInsn(ALOAD, 0);
-                InvokeUtil.invokeStaticMethod(mv, MysqlClassChange.class, "logSql");
+                InvokeUtil.invokeStaticMethod(mv, this, "logSql");
             }
         }
     }
