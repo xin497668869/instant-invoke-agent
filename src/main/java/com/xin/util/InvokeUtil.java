@@ -22,9 +22,9 @@ public class InvokeUtil {
         return null;
     }
 
-    public static void invokeStaticMethod22(MethodVisitor mv, Class cls,
-                                            Object set) {
-
+    public static void invokeStaticMethod(MethodVisitor mv, Object clsObject,
+                                          String methodName) {
+        invokeStaticMethod(mv, clsObject.getClass(), methodName);
     }
 
     public static void invokeStaticMethod(MethodVisitor mv, Class cls,

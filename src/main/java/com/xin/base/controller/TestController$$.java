@@ -1,7 +1,7 @@
 package com.xin.base.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.xin.Boot;
+import com.xin.replace.base.SettingInstance;
 import com.xin.vo.ResponseData;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +26,7 @@ public class TestController$$ implements ApplicationContextAware {
 
     @PostConstruct
     public void startServer() throws IOException {
-        int port = Boot.port;
+        int port = SettingInstance.getPort();
 
         System.out.println("服务器准备启动 端口号:" + port);
         HttpServer$$ postData = new HttpServer$$(port, this);
@@ -62,12 +62,13 @@ public class TestController$$ implements ApplicationContextAware {
             long startTime = System.currentTimeMillis();
             Object result = null;
             try {
-                Boot.debuging = true;
+                SettingInstance.setDebuging(true);
                 result = declaredMethod.invoke(bean);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Boot.debuging = false;
+            SettingInstance.setDebuging(false);
+
             long interval = System.currentTimeMillis() - startTime;
             if (!declaredMethod.getReturnType()
                                .equals(Void.class)

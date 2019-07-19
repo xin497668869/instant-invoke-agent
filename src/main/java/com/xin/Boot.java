@@ -1,8 +1,10 @@
 package com.xin;
 
-import com.xin.replace.ComponentScanAnnotationParserChangeClass;
-import com.xin.replace.MysqlChangeClass;
-import com.xin.replace.bootstrap_class.BootstrapChangeClass;
+import com.xin.replace.base.SettingInstance;
+import com.xin.replace.bootstrap_class.BootstrapClassChange;
+import com.xin.replace.componentScanAnnotationParser_class.ComponentScanAnnotationParserClassChange;
+import com.xin.replace.mysql_preparedStatement_class.MysqlClassChange;
+import com.xin.util.ClassRedefineUtil;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
@@ -15,41 +17,19 @@ import static com.xin.util.ClassByteUtil.getClassByte;
  */
 public class Boot {
 
-    public static Instrumentation instrumentation;
-    public static Integer port;
-    public static ClassLoader commonClassLoader;
-    public static boolean debuging;
+
 
     /**
      * 主要用途替换新增用途的
      */
     public static void initClass(ClassLoader classLoader) {
 
-//        System.out.println("准备替换功能模块asdfasdf");
-//        try {
-//            new MySqlConfigChangeClass(instrumentation, classLoader).redefineClass();
-//
-//        } catch (Exception e) {
-//            System.err.println("MySqlConfigChangeClass替换失败 ");
-//            e.printStackTrace();
-//        }
+        ClassRedefineUtil.initClass(new MysqlClassChange());
 
-        try {
-            new MysqlChangeClass(instrumentation, classLoader).redefineClass();
+        forceToloadClass(classLoader);
 
-        } catch (Exception e) {
-            System.err.println("MySqlChangeClass替换失败 ");
-            e.printStackTrace();
-        }
+        ClassRedefineUtil.initClass(new ComponentScanAnnotationParserClassChange());
 
-        try {
-            forceToloadClass(classLoader);
-            new ComponentScanAnnotationParserChangeClass(instrumentation, classLoader).redefineClass();
-
-        } catch (Exception e) {
-            System.err.println("ComponentScanAnnotationParserChangeClass替换失败 ");
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -78,10 +58,12 @@ public class Boot {
      */
 
     public static void premain(String agentArg, Instrumentation instrumentation) {
-        System.out.println("!!!插件参数是: $agentArg");
+        System.out.println("插件参数是: " + agentArg);
         Integer port = Integer.valueOf(agentArg);
-        Boot.instrumentation = instrumentation;
-        Boot.port = port;
+        SettingInstance.setInstrumentation(instrumentation);
+        SettingInstance.setPort(port);
+        SettingInstance.setDebuging(false);
+        SettingInstance.setClassLoader(ClassLoader.getSystemClassLoader());
 
         /**
          * 判断是否用tomcat启动
@@ -94,7 +76,7 @@ public class Boot {
 
         } catch (Exception e) {
             System.out.println("用tomcat启动");
-            new BootstrapChangeClass(instrumentation, ClassLoader.getSystemClassLoader()).redefineClass();
+            ClassRedefineUtil.initClass(new BootstrapClassChange());
         }
     }
 

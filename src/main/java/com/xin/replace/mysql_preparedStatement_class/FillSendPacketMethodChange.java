@@ -1,36 +1,34 @@
-package com.xin.replace;
+package com.xin.replace.mysql_preparedStatement_class;
 
 import com.mysql.jdbc.Buffer;
 import com.mysql.jdbc.PreparedStatement;
 import com.sql.SQLUtils;
-import com.xin.Boot;
-import com.xin.base.GeneralClassAdapter;
-import com.xin.replace.base.BaseChangeClass;
+import com.xin.replace.base.BaseMethodChange;
+import com.xin.replace.base.SettingInstance;
 import com.xin.util.InvokeUtil;
 import dnl.utils.text.table.TextTreeTable;
 import org.objectweb.asm.MethodVisitor;
 
-import java.lang.instrument.Instrumentation;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ASM7;
 
 /**
  * @author linxixin@cvte.com
  * @since 1.0
  */
-public class MysqlChangeClass extends BaseChangeClass {
+public class FillSendPacketMethodChange extends BaseMethodChange {
+    private int i = 0;
 
-    public MysqlChangeClass(Instrumentation instrumentation, ClassLoader classLoader) {
-        super(instrumentation, classLoader);
+    public FillSendPacketMethodChange(MethodVisitor mv) {
+        super(mv);
     }
 
     public static void logSql(Buffer buffer, PreparedStatement preparedStatement) {
-        if (!Boot.debuging) {
+        if (!SettingInstance.isDebuging()) {
             return;
         }
         String sql = new String(buffer.getByteBuffer(), 5, buffer.getPosition() - 5);
@@ -72,49 +70,15 @@ public class MysqlChangeClass extends BaseChangeClass {
     }
 
     @Override
-    protected String getClassName() {
-        return "com.mysql.jdbc.PreparedStatement";
-    }
-
-    @Override
-    protected GeneralClassAdapter getGeneralClassAdapter() {
-        return new GeneralClassAdapter() {
-            @Override
-            public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-                MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-
-                // 当是sayName方法是做对应的修改
-                if (name.equals("fillSendPacket")
-                        && desc.equals("([[B[Ljava/io/InputStream;[Z[I)Lcom/mysql/jdbc/Buffer;")) {
-
-                    return new ChangeMethodAdapter(mv);
-                } else {
-                    return mv;
-                }
-            }
-        };
-    }
-
-    public class ChangeMethodAdapter extends MethodVisitor {
-        int i = 0;
-
-        ChangeMethodAdapter(MethodVisitor mv) {
-            super(ASM7, mv);
-        }
-
-        @Override
-        public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-            super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-            if (name.contains("writeBytesNoNull")) {
-                i++;
-                if (i == 6) {
-                    System.out.println("sql prin");
-                    mv.visitVarInsn(ALOAD, 6);
-                    mv.visitVarInsn(ALOAD, 0);
-                    InvokeUtil.invokeStaticMethod(mv, MysqlChangeClass.class, "logSql");
-                }
+    public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+        super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+        if (name.contains("writeBytesNoNull")) {
+            i++;
+            if (i == 6) {
+                mv.visitVarInsn(ALOAD, 6);
+                mv.visitVarInsn(ALOAD, 0);
+                InvokeUtil.invokeStaticMethod(mv, MysqlClassChange.class, "logSql");
             }
         }
     }
 }
-
