@@ -34,8 +34,6 @@ public class InvokeUtil {
             throw new RuntimeException("注入失败, 没找到方法 " + cls + "  " + methodName);
         }
 
-        System.out.println("注入handler  " + cls + "  " + methodName);
-
         mv.visitMethodInsn(Opcodes.INVOKESTATIC,
                            cls.getName()
                               .replace(".", "/"),

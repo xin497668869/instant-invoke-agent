@@ -14,6 +14,7 @@ public class ClassRedefineUtil {
         } catch (Exception e) {
             System.err.println(baseClassChange.getClass()
                                               .getName() + " 替换失败 ");
+            e.printStackTrace();
         }
     }
 }

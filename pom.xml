@@ -56,6 +56,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.11</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>4.3.7.RELEASE</version>
@@ -101,23 +107,35 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.5</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>com.xin.Boot</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                            <Premain-Class>com.xin.Boot</Premain-Class>
+                        </manifestEntries>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>copy</id>
+                        <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/lib
-                            </outputDirectory>
-                            <excludeScope>provided</excludeScope>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -133,22 +151,26 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.xin.Boot</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
-                            <Premain-Class>com.xin.Boot</Premain-Class>
-                        </manifestEntries>
-                    </archive>
-
-                </configuration>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <!-- 这句话的意思是将${artifactId}-${version}.zip包里面的内容复制到 -->
+                                <copy overwrite="true"
+                                      tofile="G:\workspaces\java\person\instant-invoke\instant-invoke-plugin\resources\advance\${project.build.finalName}.jar"
+                                      file="${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar"/>
+                                <copy overwrite="true"
+                                      tofile="C:\Users\xin\AppData\Roaming\JetBrains\IntelliJIdea2020.1\plugins\instant-invoke-plugin\classes\advance\${project.build.finalName}.jar"
+                                      file="${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

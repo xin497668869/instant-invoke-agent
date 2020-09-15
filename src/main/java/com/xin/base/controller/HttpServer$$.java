@@ -1,7 +1,7 @@
 package com.xin.base.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.xin.base.controller.TestController$$.MethodVo;
+import com.xin.base.controller.TTTestController$$T.MethodVo;
 import com.xin.vo.ResponseData;
 import fi.iki.elonen.NanoHTTPD;
 
@@ -15,12 +15,12 @@ import java.util.Map;
  */
 public class HttpServer$$ extends NanoHTTPD {
 
-    private final TestController$$ testController$$;
+    private final TTTestController$$T TTTestController$$T;
 
-    public HttpServer$$(int port, TestController$$ testController$$) throws IOException {
+    public HttpServer$$(int port, TTTestController$$T TTTestController$$T) throws IOException {
         super(port);
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-        this.testController$$ = testController$$;
+        this.TTTestController$$T = TTTestController$$T;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class HttpServer$$ extends NanoHTTPD {
             Map<String, String> bodyMap = new HashMap<>();
             session.parseBody(bodyMap);
             MethodVo methodVo = JSON.parseObject(bodyMap.get("postData"), MethodVo.class);
-            ResponseData responseData = testController$$.handleRequest(methodVo);
+            ResponseData responseData = TTTestController$$T.handleRequest(methodVo);
             return newFixedLengthResponse("{\"code\":\"success\"}\n");
         } catch (Exception e) {
             e.printStackTrace();

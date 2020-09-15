@@ -11,6 +11,13 @@ import org.objectweb.asm.MethodVisitor;
 public class ComponentScanAnnotationParserClassChange extends BaseClassChange {
 
     @Override
+    protected void logWhenRedefine(boolean success) {
+        if (success) {
+            System.out.println("快速调试 controller 注入成功, 可启动快速调试功能");
+        }
+    }
+
+    @Override
     protected String getClassName() {
         return "org.springframework.context.annotation.ComponentScanAnnotationParser";
     }

@@ -3,7 +3,7 @@ package com.xin.base;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-import static org.objectweb.asm.Opcodes.ASM7;
+import static org.objectweb.asm.Opcodes.ASM5;
 
 /**
  * @author linxixin@cvte.com
@@ -12,15 +12,11 @@ import static org.objectweb.asm.Opcodes.ASM7;
 public class GeneralClassAdapter extends ClassVisitor {
 
     public GeneralClassAdapter() {
-        super(ASM7);
+        super(ASM5);
     }
 
     public void setCp(ClassVisitor cv) {
         this.cv = cv;
-    }
-
-    public void changeMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-
     }
 
     @Override

@@ -11,6 +11,15 @@ import org.objectweb.asm.MethodVisitor;
 public class BootstrapClassChange extends BaseClassChange {
 
     @Override
+    protected void logWhenRedefine(boolean success) {
+        if (success) {
+            System.out.println("tomcat 启动, 注入 Bootstrap 获取 classLoader ");
+        } else {
+            System.out.println("非 tomcat 启动, 无需注入 Bootstrap");
+        }
+    }
+
+    @Override
     protected String getClassName() {
         return "org.apache.catalina.startup.Bootstrap";
     }

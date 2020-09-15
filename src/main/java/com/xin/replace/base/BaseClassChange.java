@@ -15,19 +15,36 @@ public abstract class BaseClassChange {
     public BaseClassChange() {
     }
 
-    public void redefineClass() {
+    final public void redefineClass() {
+        String className = getClassName();
+        ClassLoader classLoader = SettingInstance.getClassLoader();
         try {
-            byte[] newClassBytes = getNewClassBytes(getClassName(), SettingInstance.getClassLoader(), getGeneralClassAdapter());
+            classLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            logWhenRedefine(false);
+            return;
+        }
+
+        try {
+            byte[] newClassBytes = getNewClassBytes(className, classLoader, getGeneralClassAdapter());
 
             ClassDefinition classDefinition = new ClassDefinition(getLoadedClass(),
                                                                   newClassBytes);
             SettingInstance.getInstrumentation()
                            .redefineClasses(classDefinition);
-            System.out.println("可进行热部署测试:" + getClassName() + "替换成功");
+
+            logWhenRedefine(true);
         } catch (Exception e) {
-            System.out.println("热部署类注入失败, 无法进行热部署:" + getClassName() + " err: " + e.getMessage());
+            System.out.println("热部署类注入失败, 无法进行热部署:" + className + " err: " + e.getMessage());
+            if (e.getMessage() == null || e.getMessage()
+                                           .isEmpty()) {
+                e.printStackTrace();
+            }
+
         }
     }
+
+    protected abstract void logWhenRedefine(boolean success);
 
     protected abstract String getClassName();
 

@@ -4,6 +4,7 @@ import com.xin.replace.base.SettingInstance;
 import com.xin.replace.bootstrap_class.BootstrapClassChange;
 import com.xin.replace.componentScanAnnotationParser_class.ComponentScanAnnotationParserClassChange;
 import com.xin.replace.mysql_preparedStatement_class.MysqlClassChange;
+import com.xin.replace.pgsql_preparedStatement_class.PgsqlClassChange;
 import com.xin.util.ClassRedefineUtil;
 
 import java.lang.instrument.Instrumentation;
@@ -18,18 +19,16 @@ import static com.xin.util.ClassByteUtil.getClassByte;
 public class Boot {
 
 
-
     /**
      * 主要用途替换新增用途的
      */
     public static void initClass(ClassLoader classLoader) {
-
         ClassRedefineUtil.initClass(new MysqlClassChange());
+        ClassRedefineUtil.initClass(new PgsqlClassChange());
 
         forceToloadClass(classLoader);
 
         ClassRedefineUtil.initClass(new ComponentScanAnnotationParserClassChange());
-
     }
 
     /**
@@ -40,7 +39,7 @@ public class Boot {
         try {
             Method method = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
             method.setAccessible(true);
-            String testControllerName = "com.xin.base.controller.TestController$$";
+            String testControllerName = "com.xin.base.controller.TTTestController$$T";
             byte[] testControllerBytes = getClassByte(ClassLoader.getSystemClassLoader(), testControllerName);
             method.invoke(classLoader, testControllerName, testControllerBytes, 0, testControllerBytes.length);
 
@@ -72,7 +71,6 @@ public class Boot {
             ClassLoader.getSystemClassLoader()
                        .loadClass("org.springframework.core.env.Environment");
             initClass(ClassLoader.getSystemClassLoader());
-            System.out.println("非tomcat启动");
 
         } catch (Exception e) {
             System.out.println("用tomcat启动");

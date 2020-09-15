@@ -2,7 +2,7 @@ package com.xin.replace.base;
 
 import org.objectweb.asm.MethodVisitor;
 
-import static org.objectweb.asm.Opcodes.ASM7;
+import static org.objectweb.asm.Opcodes.ASM5;
 
 /**
  * @author linxixin@cvte.com
@@ -10,6 +10,6 @@ import static org.objectweb.asm.Opcodes.ASM7;
  */
 public class BaseMethodChange extends MethodVisitor {
     public BaseMethodChange(MethodVisitor methodVisitor) {
-        super(ASM7, methodVisitor);
+        super(ASM5, methodVisitor);
     }
 }

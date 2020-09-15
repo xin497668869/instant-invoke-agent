@@ -11,6 +11,13 @@ import org.objectweb.asm.MethodVisitor;
 public class WebappLoaderClassChange extends BaseClassChange {
 
     @Override
+    protected void logWhenRedefine(boolean success) {
+        if (success) {
+            System.out.println("注入 WebappLocader 成功");
+        }
+    }
+
+    @Override
     protected String getClassName() {
         return "org.apache.catalina.loader.WebappLoader";
     }

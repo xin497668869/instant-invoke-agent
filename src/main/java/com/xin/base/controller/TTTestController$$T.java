@@ -3,6 +3,7 @@ package com.xin.base.controller;
 import com.alibaba.fastjson.JSON;
 import com.xin.replace.base.SettingInstance;
 import com.xin.vo.ResponseData;
+import org.springframework.aop.framework.Advised;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -12,17 +13,22 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author linxixin@cvte.com
  */
 @Component
-public class TestController$$ implements ApplicationContextAware {
+public class TTTestController$$T implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private int order = 0;
+    private ConcurrentMap<Class, Object> beanMap = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void startServer() throws IOException {
@@ -38,12 +44,58 @@ public class TestController$$ implements ApplicationContextAware {
         this.applicationContext = applicationContext;
     }
 
+    public Object getBean(Class cls, String methodName) {
+        Class orgCls = cls;
+        List<Object> beans = new ArrayList<>();
+        if (!applicationContext.getBeansOfType(cls)
+                               .isEmpty()) {
+            return applicationContext.getBean(cls);
+        }
+
+        while (true) {
+            beans.addAll(applicationContext.getBeansOfType(cls)
+                                           .values());
+            for (Class anInterface : cls.getInterfaces()) {
+                beans.addAll(applicationContext.getBeansOfType(anInterface)
+                                               .values());
+                addBeanByInterface(anInterface, beans);
+            }
+
+            cls = cls.getSuperclass();
+            if (cls == null || Object.class.equals(cls)) {
+                break;
+            }
+        }
+        for (Object bean : beans) {
+            if (bean instanceof Advised) {
+                try {
+                    if (orgCls.isInstance(((Advised) bean).getTargetSource()
+                                                          .getTarget())) {
+                        return ((Advised) bean).getTargetSource()
+                                               .getTarget();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    public void addBeanByInterface(Class cls, List<Object> beans) {
+        for (Class anInterface : cls.getInterfaces()) {
+            beans.addAll(applicationContext.getBeansOfType(anInterface)
+                                           .values());
+            addBeanByInterface(anInterface, beans);
+        }
+    }
+
     ResponseData handleRequest(MethodVo methodVo) {
         try {
             Class<?> aClass = Class.forName(methodVo.getClassName());
-            Object bean = applicationContext.getBean(aClass);
+            Object bean = getBean(aClass, methodVo.getMethodName());
             if (bean == null) {
-                System.err.println("===== 这个类还没被注入 可以使用@Component 注解类: " + aClass);
+                System.err.println("===== 这个类没找到bean或者还没被注入 可以使用@Component 注解类: " + aClass);
             }
             int uuid = ++order;
             System.out.println("===== invoke [" + dateFormat.format(
@@ -58,7 +110,7 @@ public class TestController$$ implements ApplicationContextAware {
 //                return null;
 //            }).collect(Collectors.toList());
             Method declaredMethod = aClass.getDeclaredMethod(methodVo.getMethodName());
-
+            declaredMethod.setAccessible(true);
             long startTime = System.currentTimeMillis();
             Object result = null;
             try {
